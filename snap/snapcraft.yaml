@@ -1,0 +1,80 @@
+name: hurl
+base: core26
+version: '8.0.1'
+title: Hurl
+summary: Run and test HTTP requests defined in plain text files
+description: |
+  Hurl runs HTTP requests written in a simple plain text format. It can
+  chain requests, capture values and check responses with assertions on
+  status, headers and body (JSONPath, XPath, regex). It is built on libcurl.
+  The snap also includes hurlfmt, run as hurl.hurlfmt, which formats and
+  exports Hurl files.
+
+  **Examples**
+
+     hurl session.hurl
+     hurl --test --report-html ./report tests/*.hurl
+     hurl --variable host=example.org api.hurl
+     hurl.hurlfmt --in-place session.hurl
+
+  **File access**
+
+  Hurl can use files in your home directory. To also use USB drives and
+  other removable media (/media, /mnt), run:
+
+     sudo snap connect hurl:removable-media
+license: Apache-2.0
+grade: stable
+confinement: strict
+website: https://hurl.dev
+source-code: https://github.com/Orange-OpenSource/hurl
+issues: https://github.com/Orange-OpenSource/hurl/issues
+
+platforms:
+  amd64:
+  arm64:
+  armhf:
+  ppc64el:
+  riscv64:
+  s390x:
+
+apps:
+  hurl:
+    command: bin/hurl
+    completer: share/bash-completion/completions/hurl
+    plugs:
+      - home
+      - removable-media
+      - network
+  hurlfmt:
+    command: bin/hurlfmt
+    completer: share/bash-completion/completions/hurlfmt
+    plugs:
+      - home
+      - removable-media
+
+parts:
+  hurl:
+    plugin: rust
+    source: https://github.com/Orange-OpenSource/hurl.git
+    source-tag: '8.0.1'
+    rust-channel: '1.95.0'
+    rust-path:
+      - packages/hurl
+      - packages/hurlfmt
+    build-packages:
+      - build-essential
+      - pkg-config
+      - clang
+      - libclang-dev
+      - libcurl4-openssl-dev
+      - libssl-dev
+      - libxml2-dev
+    stage-packages:
+      - libcurl4t64
+      - libxml2-16
+    override-build: |
+      craftctl default
+      install -Dm644 completions/hurl.bash "$CRAFT_PART_INSTALL/share/bash-completion/completions/hurl"
+      install -Dm644 completions/hurlfmt.bash "$CRAFT_PART_INSTALL/share/bash-completion/completions/hurlfmt"
+      install -Dm644 LICENSE "$CRAFT_PART_INSTALL/share/doc/hurl/LICENSE"
