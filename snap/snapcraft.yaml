@@ -1,6 +1,6 @@
 name: hurl
 base: core26
-adopt-info: hurl
+version: '8.0.1'
 title: Hurl
 summary: Run and test HTTP requests defined in plain text files
 description: |
@@ -58,8 +58,7 @@ parts:
   hurl:
     plugin: rust
     source: https://github.com/Orange-OpenSource/hurl.git
-    # renovate: depName=Orange-OpenSource/hurl
-    source-tag: '8.0.1'
+    source-tag: $SNAPCRAFT_PROJECT_VERSION
     rust-channel: '1.95.0'
     rust-path:
       - packages/hurl
@@ -75,9 +74,6 @@ parts:
     stage-packages:
       - libcurl4t64
       - libxml2-16
-    override-pull: |
-      craftctl default
-      craftctl set version="$(git -C "$CRAFT_PART_SRC" describe --tags --match '[0-9]*')"
     override-build: |
       craftctl default
       install -Dm644 completions/hurl.bash "$CRAFT_PART_INSTALL/share/bash-completion/completions/hurl"
