@@ -1,60 +1,64 @@
-# Hurl snap
+<div align="center">
+
+<img src="snap/gui/hurl.png" alt="Hurl logo" width="128" />
+
+# Hurl
+
+**Run and test HTTP requests defined in plain text files**
 
 [![hurl](https://snapcraft.io/hurl/badge.svg)](https://snapcraft.io/hurl)
+[![Base: core26](https://img.shields.io/badge/Base-core26-2C8C3C?logo=canonical&logoColor=white)](https://snapcraft.io/core26)
+![Confinement: strict](https://img.shields.io/badge/Confinement-strict-2C8C3C)
+[![Maintainer: sidaliteir](https://img.shields.io/badge/Maintainer-sidaliteir-2C8C3C?logo=snapcraft&logoColor=white)](https://snapcraft.io/publisher/sidaliteir)
+![Architectures: amd64 and arm64](https://img.shields.io/badge/Architectures-amd64%20%7C%20arm64-2C8C3C?logo=linux&logoColor=white)
 
-Snap packaging for [Hurl](https://github.com/Orange-OpenSource/hurl), HTTP/API testing with repeatable requests and response assertions. The snap includes both `hurl` and `hurlfmt` (run as `hurl.hurlfmt`).
+[Getting Started](#getting-started) · [Configure](#configure) · [Limitations](#limitations) · [Build](#build) · [Support](#support) · [License](#license)
 
-Unofficial build, not affiliated with or endorsed by the Hurl project.
+Unofficial snap packaging for [Hurl](https://hurl.dev), a command-line tool for chaining HTTP requests and checking responses. Includes the Hurl file formatter as `hurl.hurlfmt`.
 
-## Build
+</div>
 
-```bash
-snapcraft pack
-```
+---
 
-## Install and try
+## Getting Started
 
 <a href="https://snapcraft.io/hurl"><img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" width="180"></a>
 
 ```bash
-sudo snap install hurl                   # or a local build: ./hurl_8.0.1_*.snap --dangerous
+sudo snap install hurl
+hurl session.hurl
+hurl.hurlfmt --in-place session.hurl
+```
+
+## Configure
+
+Use Hurl files and command-line options. There are no `snap set` options. See the [upstream manual](https://hurl.dev/docs/manual.html) for request, authentication and reporting settings.
+
+```bash
 sudo snap connect hurl:removable-media   # optional: /media, /mnt
-printf 'GET https://hurl.dev\nHTTP 200\n' > hello.hurl
-hurl --test hello.hurl
-hurl.hurlfmt --in-place hello.hurl
+sudo snap alias hurl.hurlfmt hurlfmt     # optional: upstream formatter command
 ```
 
-## Known limitations
+## Limitations
 
-### hurlfmt is named hurl.hurlfmt
+- Files must be in accessible home directories or connected removable storage.
+- Your host `~/.netrc` is inaccessible. Use `--netrc-file` with an accessible file, or place `.netrc` in `~/snap/hurl/current/`.
+- Access to Unix sockets of host services, such as `/var/run/docker.sock`, is blocked by strict confinement.
 
-Snaps can only expose their own name as a plain command, so `hurlfmt` is installed as `hurl.hurlfmt`. To call it `hurlfmt`, add an alias:
+## Build
 
 ```bash
-sudo snap alias hurl.hurlfmt hurlfmt
+git clone https://github.com/sidalit/hurl-snap.git
+cd hurl-snap
+sudo snap install snapcraft --classic
+snapcraft pack
 ```
 
-### ~/.netrc is not read
+## Support
 
-`hurl --netrc` looks for `.netrc` in the snap's own home (`~/snap/hurl/current`), not in your real home folder. Strict confinement also blocks hidden files directly in `$HOME`. Copy the file somewhere visible and pass it explicitly:
-
-```bash
-cp ~/.netrc ~/hurl.netrc
-hurl --netrc-file ~/hurl.netrc session.hurl
-```
-
-### Unix sockets
-
-`--unix-socket` works with sockets in your home folder. Sockets of system services elsewhere (for example `/var/run/docker.sock`) are blocked by strict confinement.
-
-## Update to a new upstream release
-
-Change `version` in `snap/snapcraft.yaml`, then rebuild.
-
-## Automation
-
-Builds, publishing, and dependency updates use [snap-automation](https://github.com/sidalit/snap-automation).
+- **Installation or snap issues:** [open a packaging issue](https://github.com/sidalit/hurl-snap/issues).
+- **Application bugs:** [report them upstream](https://github.com/Orange-OpenSource/hurl/issues).
 
 ## License
 
-The packaging is MIT-licensed (see `LICENSE`). Hurl is Apache-2.0-licensed; its dependencies carry their own licenses.
+Snap packaging: [MIT](https://github.com/sidalit/hurl-snap/blob/main/LICENSE).
